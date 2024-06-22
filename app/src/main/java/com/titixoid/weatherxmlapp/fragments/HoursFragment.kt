@@ -5,7 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.squareup.picasso.Picasso
+import com.titixoid.weatherxmlapp.MainViewModel
 import com.titixoid.weatherxmlapp.R
 import com.titixoid.weatherxmlapp.adapters.WeatherAdapter
 import com.titixoid.weatherxmlapp.adapters.WeatherModel
@@ -16,6 +19,7 @@ class HoursFragment : Fragment() {
 
     private lateinit var binding: FragmentHoursBinding
     private lateinit var adapter: WeatherAdapter
+    private val model: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +32,17 @@ class HoursFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRcView()
+        model.liveDataList.observe(viewLifecycleOwner) {
+            model.liveDataCurrent.observe(viewLifecycleOwner){
+                val maxMinTemp = "${it.maxTemp}C°/${it.minTemp}"
+                tvData.text = it.time
+                tvCity.text = it.city
+                tvCurrentTemp.text = it.currentTemp
+                tvCondition.text = it.condition
+                tvMaxMin.text = maxMinTemp
+                Picasso.get().load("https:" + it.imageUrl).into(imWeather)
+            }
+        }
     }
 
     private fun initRcView() = with(binding){
